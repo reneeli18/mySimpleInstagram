@@ -1,15 +1,21 @@
 package com.example.mysimpleinstagram.model;
 
+import android.text.format.DateUtils;
+
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 @ParseClassName("Post")
 public class Post extends ParseObject {
     private static final String KEY_DESCRIPTION = "description";
-    private static final String KEY_IMAGE = "image";
+    private static final String KEY_MEDIA = "media";
     private static final String KEY_USER = "user";
 
     public String getDescription() {
@@ -20,12 +26,10 @@ public class Post extends ParseObject {
         put(KEY_DESCRIPTION, description);
     }
 
-    public ParseFile getImage() {
-        return getParseFile(KEY_IMAGE);
-    }
+    public ParseFile getMedia() { return getParseFile(KEY_MEDIA); }
 
-    public void setImage(ParseFile image) {
-        put(KEY_IMAGE, image);
+    public void setImage(ParseFile media) {
+        put(KEY_MEDIA, media);
     }
 
     public ParseUser getUser() {
@@ -50,5 +54,18 @@ public class Post extends ParseObject {
             include("user");
             return this;
         }
+    }
+
+    public String getRelativeTimeAgo(Date date) {
+        String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
+        SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
+        sf.setLenient(true);
+
+        String relativeDate = "";
+        long dateMillis = date.getTime();
+        relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
+                System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+
+        return relativeDate;
     }
 }

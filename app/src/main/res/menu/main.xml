@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".TimelineActivity">
+    <item
+        android:id="@+id/miCompose"
+        android:icon="@drawable/instagram_new_post_outline_24"
+        android:onClick="onComposeAction"
+        android:tint="#ff1da1f2"
+        app:showAsAction="ifRoom"
+        android:title="Compose">
+    </item>
+    <!--<item-->
+    <!--android:id="@+id/miProfile"-->
+    <!--android:icon="@drawable/ic_profile"-->
+    <!--app:showAsAction="ifRoom|withText"-->
+    <!--android:title="Profile">-->
+    <!--</item>-->
+    <item
+        android:id="@+id/miActionProgress"
+        android:title="Loading..."
+        android:visible="false"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        app:actionLayout="@layout/action_view_progress" />
+</menu>

@@ -17,7 +17,7 @@
         android:layout_marginBottom="8dp"
         android:ems="10"
         android:hint="enter a description"
-        android:inputType="text"
+        android:inputType="textNoSuggestions"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintBottom_toTopOf="@+id/takePic_btn"
         app:layout_constraintEnd_toEndOf="parent"

@@ -1,6 +1,8 @@
 package com.example.mysimpleinstagram;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -10,7 +12,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
@@ -28,7 +32,6 @@ public class HomeActivity extends AppCompatActivity {
 
     public final String APP_TAG = "HomeActivity";
 
-    private static final String imagePath = "";
     private EditText descriptionInput;
     private Button takePicButton;
     private ImageView ivImage;
@@ -71,13 +74,19 @@ public class HomeActivity extends AppCompatActivity {
 
                 //later on, they user can choose to take an image or upload an image
 
-//                File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), "share_image_" + System.currentTimeMillis() + ".png");
-//                // wrap File object into a content provider. NOTE: authority here should match authority in manifest declaration
-//                bmpUri = FileProvider.getUriForFile(MyActivity.this, "com.codepath.fileprovider", file);
+                File mediaStorageDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), APP_TAG);
 
-                final File file = new File(imagePath);
+                if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()) {
+                    Log.d(APP_TAG, "failed to create directory");
+                }
+
+                final File file = new File(mediaStorageDir.getPath() + File.separator + photoFileName);
+                if (file == null || ivImage.getDrawable() == null) {
+                    Log.e(APP_TAG, "No photo to submit");
+                    Toast.makeText(HomeActivity.this, "There is no photo!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 final ParseFile parseFile = new ParseFile(file);
-
                 createPost(description, parseFile, user);
             }
         });
@@ -88,6 +97,22 @@ public class HomeActivity extends AppCompatActivity {
                 loadTopPosts();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // by this point we have the camera photo on disk
+                Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
+                // RESIZE BITMAP, see section below
+                // Load the taken image into a preview
+                ivImage.setImageBitmap(takenImage);
+            } else { // Result was a failure
+                Toast.makeText(this, "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void launchCamera() {
@@ -139,6 +164,14 @@ public class HomeActivity extends AppCompatActivity {
                 if (e == null) {
                     Log.d("HomeActivity", "Create post success!");
                     descriptionInput.setText("");
+                    ivImage.setImageResource(0);
+                    final Intent data = new Intent(HomeActivity.this, TimelineActivity.class);
+                    // Pass relevant data back as a result
+                    //data.putExtra("post", Parcels.wrap(newPost));
+                    // Activity finished ok, return the data
+                    setResult(RESULT_OK, data); // set result code and bundle data for response
+                    startActivity(data);
+                    finish();
                 } else {
                     e.printStackTrace();
                 }

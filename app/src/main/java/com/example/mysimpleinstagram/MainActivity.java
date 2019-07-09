@@ -12,12 +12,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 
 public class MainActivity extends AppCompatActivity {
 
     private EditText usernameInput;
     private EditText passwordInput;
     private Button loginBtn;
+    private Button signupBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,13 +30,14 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser != null) {
             Log.d("LoginActivity", "Login successful");
 
-            final Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            final Intent intent = new Intent(MainActivity.this, TimelineActivity.class);
             startActivity(intent);
             finish();
         } else {
             usernameInput = findViewById(R.id.username_et);
             passwordInput = findViewById(R.id.password_et);
             loginBtn = findViewById(R.id.login_btn);
+            signupBtn = findViewById(R.id.signup_btn);
 
             loginBtn.setOnClickListener(new View.OnClickListener() {
 
@@ -46,29 +49,44 @@ public class MainActivity extends AppCompatActivity {
                     login(username, password);
                 }
             });
+
+            signupBtn.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    final String username = usernameInput.getText().toString();
+                    final String password = passwordInput.getText().toString();
+
+                    signup(username, password);
+                }
+            });
         }
-//        ParseUser.logOut();
-//        ParseUser currentUser = ParseUser.getCurrentUser();
     }
 
-//    ParseUser user = new ParseUser();
-//    // Set core properties
-//    user.setUsername("joestevens");
-//    user.setPassword("secret123");
-//    user.setEmail("email@example.com");
-//    // Set custom properties
-//    user.put("phone", "650-253-0000");
-//    // Invoke signUpInBackground
-//    user.signUpInBackground(new SignUpCallback() {
-//        public void done(ParseException e) {
-//            if (e == null) {
-//                // Hooray! Let them use the app now.
-//            } else {
-//                // Sign up didn't succeed. Look at the ParseException
-//                // to figure out what went wrong
-//            }
-//        }
-//    });
+    private void signup(String username, String password) {
+        ParseUser user = new ParseUser();
+        // Set core properties
+        user.setUsername(username);
+        user.setPassword(password);
+        //user.setEmail("email@example.com");
+//        // Set custom properties
+//        user.put("phone", "650-253-0000");
+        // Invoke signUpInBackground
+        user.signUpInBackground(new SignUpCallback() {
+            public void done(ParseException e) {
+                if (e == null) {
+                    Log.d("SignupActivity", "Signup successful");
+
+                    final Intent intent = new Intent(MainActivity.this, TimelineActivity.class);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Log.e("SignupActivity", "Signup failure");
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
     private void login(String username, String password) {
         ParseUser.logInInBackground(username, password, new LogInCallback() {
@@ -77,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 if (e == null) {
                     Log.d("LoginActivity", "Login successful");
 
-                    final Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+                    final Intent intent = new Intent(MainActivity.this, TimelineActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
