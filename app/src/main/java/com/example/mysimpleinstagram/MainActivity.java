@@ -24,21 +24,51 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        usernameInput = findViewById(R.id.username_et);
-        passwordInput = findViewById(R.id.password_et);
-        loginBtn = findViewById(R.id.login_btn);
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            Log.d("LoginActivity", "Login successful");
 
-        loginBtn.setOnClickListener(new View.OnClickListener() {
+            final Intent intent = new Intent(MainActivity.this, HomeActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            usernameInput = findViewById(R.id.username_et);
+            passwordInput = findViewById(R.id.password_et);
+            loginBtn = findViewById(R.id.login_btn);
 
-            @Override
-            public void onClick(View view) {
-                final String username = usernameInput.getText().toString();
-                final String password = passwordInput.getText().toString();
+            loginBtn.setOnClickListener(new View.OnClickListener() {
 
-                login(username, password);
-            }
-        });
+                @Override
+                public void onClick(View view) {
+                    final String username = usernameInput.getText().toString();
+                    final String password = passwordInput.getText().toString();
+
+                    login(username, password);
+                }
+            });
+        }
+//        ParseUser.logOut();
+//        ParseUser currentUser = ParseUser.getCurrentUser();
     }
+
+//    ParseUser user = new ParseUser();
+//    // Set core properties
+//    user.setUsername("joestevens");
+//    user.setPassword("secret123");
+//    user.setEmail("email@example.com");
+//    // Set custom properties
+//    user.put("phone", "650-253-0000");
+//    // Invoke signUpInBackground
+//    user.signUpInBackground(new SignUpCallback() {
+//        public void done(ParseException e) {
+//            if (e == null) {
+//                // Hooray! Let them use the app now.
+//            } else {
+//                // Sign up didn't succeed. Look at the ParseException
+//                // to figure out what went wrong
+//            }
+//        }
+//    });
 
     private void login(String username, String password) {
         ParseUser.logInInBackground(username, password, new LogInCallback() {
