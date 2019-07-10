@@ -8,9 +8,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 @ParseClassName("Post")
 public class Post extends ParseObject {
@@ -18,6 +16,7 @@ public class Post extends ParseObject {
     public static final String KEY_MEDIA = "media";
     public static final String KEY_USER = "user";
     public static final String KEY_CREATED_AT = "createdAt";
+    public static final String KEY_PROFILE_IMAGE_URL = "profilePic";
 
     public String getDescription() {
         return getString(KEY_DESCRIPTION);
@@ -29,7 +28,7 @@ public class Post extends ParseObject {
 
     public ParseFile getMedia() { return getParseFile(KEY_MEDIA); }
 
-    public void setImage(ParseFile media) {
+    public void setMedia(ParseFile media) {
         put(KEY_MEDIA, media);
     }
 
@@ -40,6 +39,10 @@ public class Post extends ParseObject {
     public void setUser(ParseUser user) {
         put(KEY_USER, user);
     }
+
+    public ParseFile getProfileImageUrl() { return getUser().getParseFile(KEY_PROFILE_IMAGE_URL); }
+
+    public void setProfileImageUrl(ParseFile proPic) { put(KEY_PROFILE_IMAGE_URL, proPic);}
 
     public static class Query extends ParseQuery<Post> {
         public Query() {
@@ -58,10 +61,6 @@ public class Post extends ParseObject {
     }
 
     public String getRelativeTimeAgo(Date date) {
-        String twitterFormat = "EEE MMM dd HH:mm:ss ZZZZZ yyyy";
-        SimpleDateFormat sf = new SimpleDateFormat(twitterFormat, Locale.ENGLISH);
-        sf.setLenient(true);
-
         String relativeDate = "";
         long dateMillis = date.getTime();
         relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,

@@ -50,16 +50,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         holder.tvUsername.setText(post.getUser().getUsername());
         holder.tvBody.setText(post.getDescription());
 
+        holder.tvUser.setText(post.getUser().getUsername());
+
         String relativeDate = post.getRelativeTimeAgo(post.getCreatedAt());
         holder.tvTimestamp.setText(relativeDate);
 
         int placeholderId = R.drawable.icon;
 
-//        Glide.with(context)
-//                .load(post.getUser().profileImageUrl)
-//                .apply(new RequestOptions().placeholder(placeholderId)
-//                        .error(placeholderId))
-//                .into(holder.ivProfileImage);
+        ParseFile proPic = post.getMedia();
+        if (proPic != null) {
+            Glide.with(context)
+                    .load(post.getProfileImageUrl().getUrl())
+                    .apply(new RequestOptions().placeholder(placeholderId)
+                            .error(placeholderId))
+                    .into(holder.ivProfileImage);
+        }
 
         ParseFile media = post.getMedia();
         if (media != null) {
@@ -84,16 +89,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         public TextView tvBody;
         public TextView tvTimestamp;
         public ImageView ivImage;
+        public TextView tvUser;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             //perform findViewById lookups
-            //ivProfileImage = (ImageView) itemView.findViewById(R.id.ivProfileImage);
+            ivProfileImage = (ImageView) itemView.findViewById(R.id.ivProfileImage);
             tvUsername = (TextView) itemView.findViewById(R.id.tvUserName);
             tvBody = (TextView) itemView.findViewById(R.id.tvBody);
             tvTimestamp = (TextView) itemView.findViewById(R.id.tvTimestamp);
             ivImage = (ImageView) itemView.findViewById(R.id.ivImage);
+            tvUser = (TextView) itemView.findViewById(R.id.tvUser);
         }
     }
 

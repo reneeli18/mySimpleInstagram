@@ -23,9 +23,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/fileprovider" />
         </provider>
-        <activity android:name=".HomeActivity"></activity>
-        <activity android:name=".TimelineActivity"></activity>
-        <activity android:name=".MainActivity">
+        <activity android:name=".HomeActivity" android:label=""></activity>
+        <activity android:name=".TimelineActivity" android:label=""></activity>
+        <activity android:name=".MainActivity" android:label="">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.example.mysimpleinstagram.HomeActivity;
 import com.example.mysimpleinstagram.R;
 import com.example.mysimpleinstagram.model.Post;
 import com.parse.FindCallback;
@@ -46,6 +47,7 @@ public class ComposeFragment extends Fragment {
     public final static int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 1034;
     public String photoFileName = "photo.jpg";
     private File photoFile;
+    private final int REQUEST_CODE = 20;
 
 
     @Nullable
@@ -159,7 +161,7 @@ public class ComposeFragment extends Fragment {
     private void createPost(String description, ParseFile imageFile, ParseUser user) {
         final Post newPost = new Post();
         newPost.setDescription(description);
-        newPost.setImage(imageFile);
+        newPost.setMedia(imageFile);
         newPost.setUser(user);
 
         newPost.saveInBackground(new SaveCallback() {
@@ -169,6 +171,10 @@ public class ComposeFragment extends Fragment {
                     Log.d("HomeActivity", "Create post success!");
                     descriptionInput.setText("");
                     ivImage.setImageResource(0);
+                    //showProgressBar();
+                    Intent i = new Intent(getContext(), HomeActivity.class);
+                    startActivityForResult(i, REQUEST_CODE);
+                    //hideProgressBar();
                 } else {
                     e.printStackTrace();
                 }

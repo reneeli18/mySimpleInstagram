@@ -20,6 +20,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.mysimpleinstagram.EndlessRecyclerViewScrollListener;
 import com.example.mysimpleinstagram.HomeActivity;
+import com.example.mysimpleinstagram.MainActivity;
 import com.example.mysimpleinstagram.PostAdapter;
 import com.example.mysimpleinstagram.R;
 import com.example.mysimpleinstagram.model.Post;
@@ -29,6 +30,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PostsFragment extends Fragment {
@@ -41,8 +43,8 @@ public class PostsFragment extends Fragment {
     MenuItem miActionProgressItem;
     private final int REQUEST_CODE = 20;
     private EndlessRecyclerViewScrollListener scrollListener;
-    //keeps track of the lowest max_id for the infinite scrolling
-    private long maxId = -1;
+    //keeps track of the maxDate (used to keep track of post order) for the infinite scrolling
+    private Date maxDate = new Date();
 
     @Nullable
     @Override
@@ -111,6 +113,7 @@ public class PostsFragment extends Fragment {
 
     protected void loadTopPosts() {
         final Post.Query postQuery = new Post.Query();
+        postQuery.whereLessThan(Post.KEY_CREATED_AT, maxDate);
         postQuery.getTop().withUser();
         postQuery.addDescendingOrder(Post.KEY_CREATED_AT);
         postQuery.findInBackground(new FindCallback<Post>() {
@@ -173,10 +176,10 @@ public class PostsFragment extends Fragment {
 
     public void fetchTimelineAsync(int page, boolean isRefreshed) {
         if (!isRefreshed) {
-            maxId = posts.get(posts.size() - 1).hashCode();
+            maxDate = posts.get(posts.size() - 1).getCreatedAt();
         } else {
             postAdapter.clear();
-            maxId = -1;
+            maxDate = new Date();
         }
         // ...the data has come back, add new items to your adapter...
         populateTimeline();
@@ -184,11 +187,12 @@ public class PostsFragment extends Fragment {
         swipeContainer.setRefreshing(false);
     }
 
-//    private void logout(String username, String password) {
-//        ParseUser.logOut();
-//        ParseUser currentUser = ParseUser.getCurrentUser();
-//        final Intent intent = new Intent(getContext(), MainActivity.class);
-//        startActivity(intent);
-//        finish();
-//    }
+    private void logout(String username, String password) {
+        ParseUser.logOut();
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        final Intent intent = new Intent(getContext(), MainActivity.class);
+        startActivity(intent);
+        AppCompatActivity appAct = (AppCompatActivity) getActivity();
+        appAct.finish();
+    }
 }
