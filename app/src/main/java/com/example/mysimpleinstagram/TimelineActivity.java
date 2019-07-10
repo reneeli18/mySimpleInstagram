@@ -58,17 +58,11 @@ public class TimelineActivity extends AppCompatActivity {
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore ( int page, int totalItemsCount, RecyclerView view){
-                fetchTimelineAsync(page, false);
+                fetchTimelineAsync(0, false);
             }
         };
         // Adds the scroll listener to RecyclerView
         rvPosts.addOnScrollListener(scrollListener);
-
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.nav_logo_whiteout);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         // Lookup the swipe container view
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
@@ -76,10 +70,7 @@ public class TimelineActivity extends AppCompatActivity {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
-                // Make sure you call swipeContainer.setRefreshing(false)
-                // once the network request has completed successfully.
-                //showProgressBar();
+                showProgressBar();
                 fetchTimelineAsync(0, true);
             }
         });
@@ -127,9 +118,6 @@ public class TimelineActivity extends AppCompatActivity {
         // Store instance of the menu item containing progress
         //TODO - check out whether it's pbProgressAction or miProgresAction
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
-        // Extract the action-view from the menu item
-        //ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
-        // Return to finish
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -140,20 +128,23 @@ public class TimelineActivity extends AppCompatActivity {
 
     public void hideProgressBar() {
         // Hide progress item
+        if (miActionProgressItem == null) {
+            return;
+        }
         miActionProgressItem.setVisible(false);
     }
 
     public void onComposeAction(MenuItem mi) {
-        //showProgressBar();
+        showProgressBar();
         Intent i = new Intent(TimelineActivity.this, HomeActivity.class);
         startActivityForResult(i, REQUEST_CODE);
-        //hideProgressBar();
+        hideProgressBar();
     }
 
     private void populateTimeline() {
         loadTopPosts();
         postAdapter.notifyItemInserted(posts.size() - 1);
-        //hideProgressBar();
+        hideProgressBar();
     }
 
     public void fetchTimelineAsync(int page, boolean isRefreshed) {
@@ -167,13 +158,5 @@ public class TimelineActivity extends AppCompatActivity {
         populateTimeline();
         // Now we call setRefreshing(false) to signal refresh has finished
         swipeContainer.setRefreshing(false);
-    }
-
-    private void logout(String username, String password) {
-        ParseUser.logOut();
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        final Intent intent = new Intent(TimelineActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
     }
 }

@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,13 +19,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.mysimpleinstagram.EndlessRecyclerViewScrollListener;
 import com.example.mysimpleinstagram.HomeActivity;
-import com.example.mysimpleinstagram.MainActivity;
 import com.example.mysimpleinstagram.PostAdapter;
 import com.example.mysimpleinstagram.R;
 import com.example.mysimpleinstagram.model.Post;
 import com.parse.FindCallback;
 import com.parse.ParseException;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -44,11 +41,12 @@ public class PostsFragment extends Fragment {
     private final int REQUEST_CODE = 20;
     private EndlessRecyclerViewScrollListener scrollListener;
     //keeps track of the maxDate (used to keep track of post order) for the infinite scrolling
-    private Date maxDate = new Date();
+    public Date maxDate = new Date();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.fragment_posts, container, false);
     }
 
@@ -56,7 +54,6 @@ public class PostsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         rvPosts = view.findViewById(R.id.rvPosts);
 
-        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         user = ParseUser.getCurrentUser();
 
         //find the RecyclerView
@@ -81,14 +78,6 @@ public class PostsFragment extends Fragment {
         // Adds the scroll listener to RecyclerView
         rvPosts.addOnScrollListener(scrollListener);
 
-        AppCompatActivity appAct = (AppCompatActivity) getActivity();
-
-        appAct.getSupportActionBar().setHomeButtonEnabled(true);
-        appAct.getSupportActionBar().setDisplayShowHomeEnabled(true);
-        appAct.getSupportActionBar().setDisplayUseLogoEnabled(true);
-        appAct.getSupportActionBar().setLogo(R.drawable.nav_logo_whiteout);
-        appAct.getSupportActionBar().setDisplayShowTitleEnabled(true);
-
         // Lookup the swipe container view
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         // Setup refresh listener which triggers new data loading
@@ -98,7 +87,7 @@ public class PostsFragment extends Fragment {
                 // Your code to refresh the list here.
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
-                //showProgressBar();
+                showProgressBar();
                 fetchTimelineAsync(0, true);
             }
         });
@@ -125,6 +114,7 @@ public class PostsFragment extends Fragment {
                                 + objects.get(i).getDescription()
                                 + "\nusername = " + objects.get(i).getUser().getUsername());
                     }
+                    posts.clear();
                     posts.addAll(objects);
                     postAdapter.notifyItemInserted(0);
                     //rvPosts.scrollToPosition(0);
@@ -144,11 +134,7 @@ public class PostsFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         // Store instance of the menu item containing progress
-        //TODO - check out whether it's pbProgressAction or miProgresAction
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
-        // Extract the action-view from the menu item
-        //ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
-        // Return to finish
     }
 
     public void showProgressBar() {
@@ -158,20 +144,23 @@ public class PostsFragment extends Fragment {
 
     public void hideProgressBar() {
         // Hide progress item
+        if (miActionProgressItem == null) {
+            return;
+        }
         miActionProgressItem.setVisible(false);
     }
 
     public void onComposeAction(MenuItem mi) {
-        //showProgressBar();
+        showProgressBar();
         Intent i = new Intent(getContext(), HomeActivity.class);
         startActivityForResult(i, REQUEST_CODE);
-        //hideProgressBar();
+        hideProgressBar();
     }
 
     private void populateTimeline() {
         loadTopPosts();
         postAdapter.notifyItemInserted(posts.size() - 1);
-        //hideProgressBar();
+        hideProgressBar();
     }
 
     public void fetchTimelineAsync(int page, boolean isRefreshed) {
@@ -185,14 +174,5 @@ public class PostsFragment extends Fragment {
         populateTimeline();
         // Now we call setRefreshing(false) to signal refresh has finished
         swipeContainer.setRefreshing(false);
-    }
-
-    private void logout(String username, String password) {
-        ParseUser.logOut();
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        final Intent intent = new Intent(getContext(), MainActivity.class);
-        startActivity(intent);
-        AppCompatActivity appAct = (AppCompatActivity) getActivity();
-        appAct.finish();
     }
 }

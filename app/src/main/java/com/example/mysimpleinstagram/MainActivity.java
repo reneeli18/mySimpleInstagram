@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         user.setUsername(username);
         user.setPassword(password);
         //user.setEmail("email@example.com");
-//        // Set custom properties
+//        Set custom properties
 //        user.put("phone", "650-253-0000");
         // Invoke signUpInBackground
         user.signUpInBackground(new SignUpCallback() {
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 if (e == null) {
                     Log.d("SignupActivity", "Signup successful");
 
-                    final Intent intent = new Intent(MainActivity.this, TimelineActivity.class);
+                    final Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 if (e == null) {
                     Log.d("LoginActivity", "Login successful");
 
-                    final Intent intent = new Intent(MainActivity.this, TimelineActivity.class);
+                    final Intent intent = new Intent(MainActivity.this, HomeActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
