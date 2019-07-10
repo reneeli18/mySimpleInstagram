@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.mysimpleinstagram.model.Post;
+import com.parse.ParseFile;
 import com.parse.ParseUser;
 
 import java.util.List;
@@ -60,11 +61,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 //                        .error(placeholderId))
 //                .into(holder.ivProfileImage);
 
-        Glide.with(context)
-                .load(post.getMedia().getUrl())
-                .apply(new RequestOptions().placeholder(placeholderId)
-                        .error(placeholderId))
-                .into(holder.ivImage);
+        ParseFile media = post.getMedia();
+        if (media != null) {
+            Glide.with(context)
+                    .load(media.getUrl())
+                    .apply(new RequestOptions().placeholder(placeholderId)
+                            .error(placeholderId))
+                    .into(holder.ivImage);
+        }
     }
 
     @Override

@@ -1,16 +1,27 @@
-package com.example.mysimpleinstagram;
+package com.example.mysimpleinstagram.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.mysimpleinstagram.EndlessRecyclerViewScrollListener;
+import com.example.mysimpleinstagram.HomeActivity;
+import com.example.mysimpleinstagram.PostAdapter;
+import com.example.mysimpleinstagram.R;
 import com.example.mysimpleinstagram.model.Post;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -20,12 +31,12 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TimelineActivity extends AppCompatActivity {
+public class PostsFragment extends Fragment {
 
+    protected RecyclerView rvPosts;
+    protected PostAdapter postAdapter;
     ParseUser user;
-    List<Post> posts = new ArrayList<>();
-    RecyclerView rvPosts;
-    PostAdapter postAdapter;
+    protected List<Post> posts = new ArrayList<>();
     private SwipeRefreshLayout swipeContainer;
     MenuItem miActionProgressItem;
     private final int REQUEST_CODE = 20;
@@ -33,27 +44,31 @@ public class TimelineActivity extends AppCompatActivity {
     //keeps track of the lowest max_id for the infinite scrolling
     private long maxId = -1;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_timeline);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_posts, container, false);
+    }
 
-        // Specify which class to query
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        rvPosts = view.findViewById(R.id.rvPosts);
+
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         user = ParseUser.getCurrentUser();
 
         //find the RecyclerView
-        rvPosts = (RecyclerView) findViewById(R.id.rvPosts);
+        rvPosts = (RecyclerView) view.findViewById(R.id.rvPosts);
         //init the arraylist (data source)
         posts = new ArrayList<>();
         //construct the adapter from this data source
         postAdapter = new PostAdapter(posts);
         //RecyclerView setup (layout manager, use adapter)
-        rvPosts.setLayoutManager(new LinearLayoutManager(this));
+        rvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
         //set the adapter
         rvPosts.setAdapter(postAdapter);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         rvPosts.setLayoutManager(linearLayoutManager);
         scrollListener = new EndlessRecyclerViewScrollListener(linearLayoutManager) {
             @Override
@@ -64,14 +79,16 @@ public class TimelineActivity extends AppCompatActivity {
         // Adds the scroll listener to RecyclerView
         rvPosts.addOnScrollListener(scrollListener);
 
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-        getSupportActionBar().setLogo(R.drawable.nav_logo_whiteout);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        AppCompatActivity appAct = (AppCompatActivity) getActivity();
+
+        appAct.getSupportActionBar().setHomeButtonEnabled(true);
+        appAct.getSupportActionBar().setDisplayShowHomeEnabled(true);
+        appAct.getSupportActionBar().setDisplayUseLogoEnabled(true);
+        appAct.getSupportActionBar().setLogo(R.drawable.nav_logo_whiteout);
+        appAct.getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         // Lookup the swipe container view
-        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -92,10 +109,10 @@ public class TimelineActivity extends AppCompatActivity {
         populateTimeline();
     }
 
-    private void loadTopPosts() {
+    protected void loadTopPosts() {
         final Post.Query postQuery = new Post.Query();
         postQuery.getTop().withUser();
-
+        postQuery.addDescendingOrder(Post.KEY_CREATED_AT);
         postQuery.findInBackground(new FindCallback<Post>() {
             @Override
             public void done(List<Post> objects, ParseException e) {
@@ -107,7 +124,7 @@ public class TimelineActivity extends AppCompatActivity {
                     }
                     posts.addAll(objects);
                     postAdapter.notifyItemInserted(0);
-                    rvPosts.scrollToPosition(0);
+                    //rvPosts.scrollToPosition(0);
                 } else {
                     e.printStackTrace();
                 }
@@ -116,21 +133,19 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        inflater.inflate(R.menu.main, menu);
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(Menu menu) {
         // Store instance of the menu item containing progress
         //TODO - check out whether it's pbProgressAction or miProgresAction
         miActionProgressItem = menu.findItem(R.id.miActionProgress);
         // Extract the action-view from the menu item
         //ProgressBar v =  (ProgressBar) MenuItemCompat.getActionView(miActionProgressItem);
         // Return to finish
-        return super.onPrepareOptionsMenu(menu);
     }
 
     public void showProgressBar() {
@@ -145,7 +160,7 @@ public class TimelineActivity extends AppCompatActivity {
 
     public void onComposeAction(MenuItem mi) {
         //showProgressBar();
-        Intent i = new Intent(TimelineActivity.this, HomeActivity.class);
+        Intent i = new Intent(getContext(), HomeActivity.class);
         startActivityForResult(i, REQUEST_CODE);
         //hideProgressBar();
     }
@@ -169,11 +184,11 @@ public class TimelineActivity extends AppCompatActivity {
         swipeContainer.setRefreshing(false);
     }
 
-    private void logout(String username, String password) {
-        ParseUser.logOut();
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        final Intent intent = new Intent(TimelineActivity.this, MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
+//    private void logout(String username, String password) {
+//        ParseUser.logOut();
+//        ParseUser currentUser = ParseUser.getCurrentUser();
+//        final Intent intent = new Intent(getContext(), MainActivity.class);
+//        startActivity(intent);
+//        finish();
+//    }
 }

@@ -14,9 +14,10 @@ import java.util.Locale;
 
 @ParseClassName("Post")
 public class Post extends ParseObject {
-    private static final String KEY_DESCRIPTION = "description";
-    private static final String KEY_MEDIA = "media";
-    private static final String KEY_USER = "user";
+    public static final String KEY_DESCRIPTION = "description";
+    public static final String KEY_MEDIA = "media";
+    public static final String KEY_USER = "user";
+    public static final String KEY_CREATED_AT = "createdAt";
 
     public String getDescription() {
         return getString(KEY_DESCRIPTION);
