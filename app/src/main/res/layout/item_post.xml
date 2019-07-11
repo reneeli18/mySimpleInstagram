@@ -38,10 +38,11 @@
         android:autoLink="all"
         android:linksClickable="true"
         android:text="TextView"
+        android:inputType="textMultiLine"
         android:textColor="#0A0000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tvUser"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/ivLike" />
 
     <TextView
         android:id="@+id/tvTimestamp"
@@ -67,7 +68,7 @@
         app:srcCompat="@drawable/icon" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/ivLike"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="8dp"
@@ -78,24 +79,24 @@
         app:srcCompat="@drawable/ufi_heart" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/ivComment"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/ivLike"
         app:layout_constraintTop_toBottomOf="@+id/ivImage"
         app:srcCompat="@drawable/ufi_comment" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/ivShare"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        app:layout_constraintStart_toEndOf="@+id/ivComment"
         app:layout_constraintTop_toBottomOf="@+id/ivImage"
         app:srcCompat="@drawable/direct" />
 
@@ -109,6 +110,6 @@
         android:textColor="#0A0000"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintTop_toBottomOf="@+id/ivLike" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

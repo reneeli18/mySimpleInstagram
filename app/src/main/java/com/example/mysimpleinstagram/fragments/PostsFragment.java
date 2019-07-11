@@ -1,6 +1,5 @@
 package com.example.mysimpleinstagram.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.mysimpleinstagram.EndlessRecyclerViewScrollListener;
-import com.example.mysimpleinstagram.HomeActivity;
 import com.example.mysimpleinstagram.PostAdapter;
 import com.example.mysimpleinstagram.R;
 import com.example.mysimpleinstagram.model.Post;
@@ -114,7 +112,6 @@ public class PostsFragment extends Fragment {
                                 + objects.get(i).getDescription()
                                 + "\nusername = " + objects.get(i).getUser().getUsername());
                     }
-                    posts.clear();
                     posts.addAll(objects);
                     postAdapter.notifyItemInserted(0);
                     //rvPosts.scrollToPosition(0);
@@ -148,13 +145,6 @@ public class PostsFragment extends Fragment {
             return;
         }
         miActionProgressItem.setVisible(false);
-    }
-
-    public void onComposeAction(MenuItem mi) {
-        showProgressBar();
-        Intent i = new Intent(getContext(), HomeActivity.class);
-        startActivityForResult(i, REQUEST_CODE);
-        hideProgressBar();
     }
 
     private void populateTimeline() {
