@@ -1,6 +1,8 @@
 package com.example.mysimpleinstagram.fragments;
 
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -51,6 +53,9 @@ public class ComposeFragment extends Fragment {
     public String photoFileName = "photo.jpg";
     private File photoFile;
     private final int REQUEST_CODE = 20;
+    private static final int RESULT_LOAD_IMAGE = 1;
+    ImageView ivUpload;
+    Button upload_btn;
 
 
     @Nullable
@@ -121,6 +126,10 @@ public class ComposeFragment extends Fragment {
             } else { // Result was a failure
                 Toast.makeText(getContext(), "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
             }
+        } else if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && data != null) {
+            Uri selectedImage = data.getData();
+            photoFile = getPhotoFileUri(getRealPathFromURI(getContext(), selectedImage));
+            ivUpload.setImageURI(selectedImage);
         }
     }
 
@@ -232,5 +241,20 @@ public class ComposeFragment extends Fragment {
                 }
             }
         });
+    }
+
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 }
