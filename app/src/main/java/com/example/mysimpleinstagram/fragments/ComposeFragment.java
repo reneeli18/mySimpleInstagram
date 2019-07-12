@@ -209,13 +209,11 @@ public class ComposeFragment extends Fragment {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    //showProgressBar();
                     Log.d("HomeActivity", "Create post success!");
                     descriptionInput.setText("");
                     ivImage.setImageResource(0);
                     Intent i = new Intent(getContext(), HomeActivity.class);
                     startActivityForResult(i, REQUEST_CODE);
-                    //hideProgressBar();
                 } else {
                     e.printStackTrace();
                 }

@@ -176,7 +176,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                         } else {
                             relation.add(like);
                             post.saveInBackground();
-                            //like.saveInBackground();
                         }
                         post.saveInBackground(new SaveCallback() {
                             @Override
@@ -199,12 +198,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     public void clear() {
         mPosts.clear();
-        notifyDataSetChanged();
-    }
-
-    // Add a list of items -- change to type used
-    public void addAll(List<Post> list) {
-        mPosts.addAll(list);
         notifyDataSetChanged();
     }
 }

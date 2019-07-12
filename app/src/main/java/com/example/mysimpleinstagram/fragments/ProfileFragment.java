@@ -126,7 +126,7 @@ public class ProfileFragment extends PostsFragment {
             AppCompatActivity appAct = (AppCompatActivity) getActivity();
             appAct.finish();
 //        } else if (id == R.id.change_profile_picture) {
-//            Intent intent=new Intent(getApplicationContext(), ChangeProfilePicture.class);
+//            Intent intent=new Intent(getApplicationContext(), UploadProPicActivity.class);
 //            startActivity(intent);
 //            return true;
         }
