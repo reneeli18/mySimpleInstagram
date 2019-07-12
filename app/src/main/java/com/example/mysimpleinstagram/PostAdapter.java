@@ -2,6 +2,7 @@ package com.example.mysimpleinstagram;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.mysimpleinstagram.model.Like;
 import com.example.mysimpleinstagram.model.Post;
+import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.parceler.Parcels;
 
@@ -47,7 +52,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         //get the data according to position
         Post post = mPosts.get(position);
-        ParseUser user = post.getUser();
 
         //populate the views according to this data
         holder.tvUsername.setText(post.getUser().getUsername());
@@ -57,6 +61,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
         String relativeDate = post.getRelativeTimeAgo(post.getCreatedAt());
         holder.tvTimestamp.setText(relativeDate);
+
+        try {
+            if (post.getLikeStatus(ParseUser.getCurrentUser())) {
+                holder.ivLike.setImageResource(R.drawable.ufi_heart_active);
+            } else {
+                holder.ivLike.setImageResource(R.drawable.ufi_heart);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         int placeholderId = R.drawable.icon;
 
@@ -107,7 +121,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             tvUser = (TextView) itemView.findViewById(R.id.tvUser);
             ivLike = (ImageView) itemView.findViewById(R.id.ivLike);
 
-
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -124,6 +137,61 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                         // show the activity
                         context.startActivity(intent);
                     }
+                }
+            });
+            ivLike.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    // make sure the position is valid, i.e. actually exists in the view
+                    if (position != RecyclerView.NO_POSITION) {
+                        // get the post at the position, this won't work if the class is static
+                        final Post post = mPosts.get(position);
+                        final ParseUser user = ParseUser.getCurrentUser();
+                        ParseRelation<Like> relation = post.getRelation("likes");
+                        final Like like = new Like();
+                        like.setUser(ParseUser.getCurrentUser());
+                        like.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    Log.d("PostAdapter", "Change like status success!");
+                                } else {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+                        boolean liked = false;
+                        try {
+                            liked = !relation.getQuery().whereEqualTo("user", user).find().isEmpty();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        if (liked) {
+                            relation.remove(like);
+                            like.saveInBackground();
+                            post.saveInBackground();
+                        } else {
+                            relation.add(like);
+                            post.saveInBackground();
+                            //like.saveInBackground();
+                        }
+                        post.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+//                                    String text = "Liked by " + user.getUsername();
+//                                    tvLikedBy.setText(text);
+                                    Log.d("PostAdapter", "Change like status success!");
+                                } else {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                    notifyItemChanged(position);
                 }
             });
         }

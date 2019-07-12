@@ -34,10 +34,10 @@ public class PostsFragment extends Fragment {
     protected PostAdapter postAdapter;
     ParseUser user;
     protected List<Post> posts = new ArrayList<>();
-    private SwipeRefreshLayout swipeContainer;
+    protected SwipeRefreshLayout swipeContainer;
     MenuItem miActionProgressItem;
     private final int REQUEST_CODE = 20;
-    private EndlessRecyclerViewScrollListener scrollListener;
+    protected EndlessRecyclerViewScrollListener scrollListener;
     //keeps track of the maxDate (used to keep track of post order) for the infinite scrolling
     public Date maxDate = new Date();
 
@@ -147,7 +147,7 @@ public class PostsFragment extends Fragment {
         miActionProgressItem.setVisible(false);
     }
 
-    private void populateTimeline() {
+    protected void populateTimeline() {
         loadTopPosts();
         postAdapter.notifyItemInserted(posts.size() - 1);
         hideProgressBar();

@@ -25,6 +25,7 @@ public class PostDetailsActivity extends AppCompatActivity {
     public TextView tvTimestamp;
     public ImageView ivImage;
     public TextView tvUser;
+    public ImageView ivLike;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,7 @@ public class PostDetailsActivity extends AppCompatActivity {
 
         String relativeDate = post.getRelativeTimeAgo(post.getCreatedAt());
         tvTimestamp.setText(relativeDate);
+        ivLike = (ImageView) findViewById(R.id.ivLike);
 
         int placeholderId = R.drawable.icon;
 

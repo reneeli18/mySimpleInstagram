@@ -194,6 +194,7 @@ public class ComposeFragment extends Fragment {
         newPost.setDescription(description);
         newPost.setMedia(imageFile);
         newPost.setUser(user);
+        //ParseRelation<ParseObject> relation = newPost.getRelation("likes");
 
         newPost.saveInBackground(new SaveCallback() {
             @Override

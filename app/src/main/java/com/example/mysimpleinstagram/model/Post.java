@@ -3,6 +3,7 @@ package com.example.mysimpleinstagram.model;
 import android.text.format.DateUtils;
 
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -17,6 +18,7 @@ public class Post extends ParseObject {
     public static final String KEY_USER = "user";
     public static final String KEY_CREATED_AT = "createdAt";
     public static final String KEY_PROFILE_IMAGE_URL = "profilePic";
+    public static final String KEY_LIKED = "likes";
 
     public String getDescription() {
         return getString(KEY_DESCRIPTION);
@@ -44,6 +46,8 @@ public class Post extends ParseObject {
 
     public void setProfileImageUrl(ParseFile proPic) { put(KEY_PROFILE_IMAGE_URL, proPic);}
 
+    public boolean getLikeStatus(ParseUser user) throws ParseException { return !getRelation("likes").getQuery().whereEqualTo("user", user).find().isEmpty(); }
+
     public static class Query extends ParseQuery<Post> {
         public Query() {
             super(Post.class);
@@ -56,8 +60,10 @@ public class Post extends ParseObject {
 
         public Query withUser() {
             include("user");
+
             return this;
         }
+
     }
 
     public String getRelativeTimeAgo(Date date) {

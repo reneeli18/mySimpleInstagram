@@ -2,6 +2,7 @@ package com.example.mysimpleinstagram;
 
 import android.app.Application;
 
+import com.example.mysimpleinstagram.model.Like;
 import com.example.mysimpleinstagram.model.Post;
 import com.parse.Parse;
 import com.parse.ParseObject;
@@ -12,6 +13,7 @@ public class ParseApp extends Application {
     public void onCreate() {
         super.onCreate();
 
+        ParseObject.registerSubclass(Like.class);
         ParseObject.registerSubclass(Post.class);
         final Parse.Configuration configuration = new Parse.Configuration.Builder(this)
                 .applicationId("mySimpleInstagram")
